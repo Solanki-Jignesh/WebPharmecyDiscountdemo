@@ -1,0 +1,64 @@
+﻿@model List<WebPharmecyDiscountdemo.Models.DTOs.DTODiscountCode>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h2>Discount Codes</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">+ Add Discount Code</a>
+
+
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Code</th>
+                <th>Value</th>
+                <th>Value Type</th>
+                <th>Total Usage</th>
+                <th>Per Customer Usage</th>
+                <th>Applies To All</th>
+                <th>Applies To User IDs</th>
+                <th>Minimum Cart Value</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Use Count</th>
+                <th>Active</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Code</td>
+                    <td>@item.Value</td>
+                    <td>@(item.ValueType)</td>
+                    <td>@(item.TotalUsage?.ToString() ?? "Unlimited")</td>
+                    <td>@(item.PerCustomerUsage?.ToString() ?? "Unlimited")</td>
+                    <td>@(item.AppliesToAll ? "Yes" : "No")</td>
+                    <td>@string.Join(", ", item.AppliesToUserIds)</td>
+                    <td>@item.MinimumCartValue</td>
+                    <td>@(item.StartAt.HasValue? item.StartAt.Value.ToString("yyyy-MM-dd") : "N/A")</td>
+                    <td>@(item.EndAt.HasValue? item.EndAt.Value.ToString("yyyy-MM-dd") : "N/A")</td>
+                    <td>@item.UseCount</td>
+                    <td>@(item.IsActive ? "Yes" : "No")</td>
+                  
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No discount codes found.</p>
+}

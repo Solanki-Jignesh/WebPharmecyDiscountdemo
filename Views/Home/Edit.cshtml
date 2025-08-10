@@ -1,0 +1,161 @@
+﻿@model WebPharmecyDiscountdemo.Models.DTOs.DTODiscountCode
+@{
+    ViewData["Title"] = "Edit Discount Code";
+}
+
+<h2>Edit Discount Code</h2>
+<hr />
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <!-- Code -->
+    <div class="mb-3">
+        <label asp-for="Code" class="form-label"></label>
+        <input asp-for="Code" class="form-control" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <!-- Value -->
+    <div class="mb-3">
+        <label asp-for="Value" class="form-label"></label>
+        <input asp-for="Value" class="form-control" />
+        <span asp-validation-for="Value" class="text-danger"></span>
+    </div>
+
+    <!-- Value Type -->
+    <div class="mb-3">
+        <label asp-for="ValueType" class="form-label"></label>
+        <select asp-for="ValueType" class="form-select">
+            <option value="">-- Select Type --</option>
+            <option value="Percentage" selected="@(Model.ValueType == "Percentage" ? "selected" : null)">Percentage</option>
+            <option value="Fixed" selected="@(Model.ValueType == "Fixed" ? "selected" : null)">Fixed</option>
+        </select>
+        <span asp-validation-for="ValueType" class="text-danger"></span>
+    </div>
+
+    <!-- Total Usage -->
+    <div class="mb-3">
+        <label asp-for="TotalUsage" class="form-label"></label>
+        <input asp-for="TotalUsage" class="form-control" id="txtTotalUsage" />
+        <div class="form-check mt-1">
+            <input type="checkbox" id="chkUnlimitedTotal" class="form-check-input" @(Model.TotalUsage == null ? "checked" : "") />
+            <label for="chkUnlimitedTotal" class="form-check-label">Unlimited Total Usage</label>
+        </div>
+    </div>
+
+    <!-- Per Customer Usage -->
+    <div class="mb-3">
+        <label asp-for="PerCustomerUsage" class="form-label"></label>
+        <input asp-for="PerCustomerUsage" class="form-control" id="txtPerCustomerUsage" />
+        <div class="form-check mt-1">
+            <input type="checkbox" id="chkUnlimitedPerCustomer" class="form-check-input" @(Model.PerCustomerUsage == null ? "checked" : "") />
+            <label for="chkUnlimitedPerCustomer" class="form-check-label">Unlimited Per Customer</label>
+        </div>
+    </div>
+
+    <!-- Applies to All -->
+    <div class="form-check mb-3">
+        <input asp-for="AppliesToAll" class="form-check-input" type="checkbox" id="chkAppliesToAll" />
+        <label asp-for="AppliesToAll" class="form-check-label"></label>
+    </div>
+
+    <!-- Customers Dropdown -->
+    <div class="mb-3">
+        <label class="form-label">Select Customers</label>
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="customerDropdown" data-bs-toggle="dropdown">
+                Choose Customers
+            </button>
+            <ul class="dropdown-menu p-2" style="max-height: 250px; overflow-y: auto;">
+                @for (int i = 0; i < ((List<SelectListItem>)ViewBag.CustomerList).Count; i++)
+                {
+                    var customer = ((List<SelectListItem>)ViewBag.CustomerList)[i];
+                    <li>
+                        <div class="form-check">
+                            <input type="checkbox"
+                                   name="AppliesToUserIds"
+                                   value="@customer.Value"
+                                   class="form-check-input customer-checkbox"
+                                   id="cust_@i"
+                                   @(Model.AppliesToUserIds != null && Model.AppliesToUserIds.Contains(customer.Value) ? "checked" : "") />
+
+                            <label class="form-check-label" for="cust_@i">@customer.Text</label>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+        <span asp-validation-for="AppliesToUserIds" class="text-danger"></span>
+    </div>
+
+    <!-- Minimum Cart Value -->
+    <div class="mb-3">
+        <label asp-for="MinimumCartValue" class="form-label"></label>
+        <input asp-for="MinimumCartValue" class="form-control" />
+        <span asp-validation-for="MinimumCartValue" class="text-danger"></span>
+    </div>
+
+    <!-- Start Date -->
+    <div class="mb-3">
+        <label asp-for="StartAt" class="form-label"></label>
+        <input asp-for="StartAt" class="form-control" type="datetime-local" value="@(Model.StartAt.HasValue ? Model.StartAt.Value.ToString("yyyy-MM-ddTHH\\:mm") : "")" />
+        <span asp-validation-for="StartAt" class="text-danger"></span>
+    </div>
+
+    <!-- End Date -->
+    <div class="mb-3">
+        <label asp-for="EndAt" class="form-label"></label>
+        <input asp-for="EndAt" class="form-control" type="datetime-local" value="@(Model.EndAt.HasValue ? Model.EndAt.Value.ToString("yyyy-MM-ddTHH\\:mm") : "")" />
+        <span asp-validation-for="EndAt" class="text-danger"></span>
+    </div>
+
+    <!-- Use Count -->
+    <div class="mb-3">
+        <label asp-for="UseCount" class="form-label"></label>
+        <input asp-for="UseCount" class="form-control" />
+    </div>
+
+    <!-- Active -->
+    <div class="form-check mb-3">
+        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+        <label asp-for="IsActive" class="form-check-label"></label>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById("chkAppliesToAll").addEventListener("change", function () {
+            document.querySelectorAll(".customer-checkbox").forEach(cb => {
+                cb.disabled = this.checked;
+                if (this.checked) cb.checked = false;
+            });
+        });
+
+        document.getElementById("chkUnlimitedTotal").addEventListener("change", function () {
+            const txt = document.getElementById("txtTotalUsage");
+            txt.disabled = this.checked;
+            if (this.checked) txt.value = "";
+        });
+
+        document.getElementById("chkUnlimitedPerCustomer").addEventListener("change", function () {
+            const txt = document.getElementById("txtPerCustomerUsage");
+            txt.disabled = this.checked;
+            if (this.checked) txt.value = "";
+        });
+
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const startDate = new Date(document.querySelector("[name='StartAt']").value);
+            const endDate = new Date(document.querySelector("[name='EndAt']").value);
+            if (startDate && endDate && endDate <= startDate) {
+                e.preventDefault();
+                alert("End date must be after start date.");
+            }
+        });
+    </script>
+}
